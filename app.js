@@ -30,6 +30,12 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 
-app.listen(process.env.PORT, () => {
-  console.log("Server running on", process.env.PORT);
-});
+// For local development
+if (process.env.NODE_ENV !== "production") {
+  app.listen(process.env.PORT || 5000, () => {
+    console.log("Server running on", process.env.PORT || 5000);
+  });
+}
+
+// Export for Vercel serverless
+module.exports = app;
