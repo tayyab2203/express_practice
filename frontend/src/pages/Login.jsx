@@ -99,7 +99,7 @@ if (!document.getElementById(linkId)) {
 
 // ── Component ────────────────────────────────────────────────
 export default function Login() {
-  const [email, setEmail]       = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   // ✅ Logic bilkul same — sirf UI wrapper badla
@@ -108,8 +108,17 @@ export default function Login() {
 
     if (data.token) {
       localStorage.setItem("token", data.token);
-      alert("Login successful");
-      window.location.href = "/dashboard";
+      const role = data.user?.role ?? null;
+      if (role) {
+        localStorage.setItem("role", role);
+      }
+
+      // role ke hisaab se redirect (fallback to employee if role missing)
+      if (role === "admin") {
+        window.location.href = "/dashboard/admin";
+      } else {
+        window.location.href = "/dashboard/employee";
+      }
     } else {
       alert(data.message || "Login failed");
     }
@@ -118,12 +127,10 @@ export default function Login() {
   return (
     <div style={styles.page}>
       <div style={styles.card}>
-
         {/* Heading */}
         <p style={styles.eyebrow}>Welcome back</p>
         <h2 style={styles.heading}>
-          Sign in to your{" "}
-          <span style={styles.headingAccent}>account</span>
+          Sign in to your <span style={styles.headingAccent}>account</span>
         </h2>
         <p style={styles.sub}>Enter your credentials to continue</p>
 
@@ -159,9 +166,10 @@ export default function Login() {
         {/* Footer */}
         <p style={styles.footer}>
           Don't have an account?{" "}
-          <a href="/register" style={styles.footerLink}>Register</a>
+          <a href="/register" style={styles.footerLink}>
+            Register
+          </a>
         </p>
-
       </div>
     </div>
   );

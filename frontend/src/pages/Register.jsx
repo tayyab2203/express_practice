@@ -104,7 +104,8 @@ export default function Register() {
   const [password, setPassword] = useState("");
 
   const handleRegister = async () => {
-    const data = await registerUser({ name, email, password });
+    // default new users to employee role
+    const data = await registerUser({ name, email, password, role: "employee" });
 
     if (data.message) {
       alert("User registered successfully");

@@ -5,4 +5,10 @@ const supabase = createClient(
   process.env.SUPABASE_KEY
 );
 
-module.exports = supabase;
+// Service role client — bypasses RLS (for backend operations)
+const supabaseAdmin = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY
+);
+
+module.exports = { supabase, supabaseAdmin };

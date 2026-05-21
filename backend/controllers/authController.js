@@ -5,7 +5,7 @@
 //   2. loginUser     — email/password verify karo aur JWT do
 // ============================================================
 
-const supabase = require("../config/supabase"); // Supabase client (DB connection)
+const { supabase } = require("../config/supabase"); // Supabase client (DB connection)
 const bcrypt   = require("bcryptjs");           // Password hashing library
 const jwt      = require("jsonwebtoken");       // JWT token banana ke liye
 
@@ -16,7 +16,9 @@ const jwt      = require("jsonwebtoken");       // JWT token banana ke liye
 const registerUser = async (req, res) => {
   try {
     // Request body se values nikalo
-    const { name, email, password, role } = req.body;
+    const { name, email, password } = req.body;
+    // default role to 'employee' when not provided by client
+    const role = req.body.role || "employee";
 
     // Step 1: Password ko hash karo — plain text kabhi store nahi karte!
     // bcrypt 10 "salt rounds" use karta hai — jitna zyada, utna secure (par slow bhi)
@@ -31,7 +33,7 @@ const registerUser = async (req, res) => {
           name,
           email,
           password: hashedPassword, // hashed password store hoga, original nahi
-          role                       // e.g. "admin" | "user"
+          role,                      // e.g. "admin" | "employee"
         }
       ])
       .select();
@@ -95,10 +97,15 @@ const loginUser = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    // Token client ko bhejo — woh isko Authorization header mein use karega
+    // Token client ko bhejo — aur user ka minimal info include karo
+    // (password secret rakhna hai, isliye sirf id + role bhejte hain)
     res.json({
       message: "Login successful",
-      token
+      token,
+      user: {
+        id: data.id,
+        role: data.role
+      }
     });
 
   } catch (err) {

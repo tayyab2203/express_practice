@@ -23,12 +23,21 @@ const cors = require("cors");
 
 const authRoutes = require("./routes/authRoutes");
 
+const adminRoutes = require("./routes/adminRoutes");
+
+const employeeRoutes = require("./routes/employeeRoutes");
+
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/auth", authRoutes);
+
+app.use("/api/admin", adminRoutes);
+
+app.use("/api/employee", employeeRoutes);
 
 // For local development
 if (process.env.NODE_ENV !== "production") {

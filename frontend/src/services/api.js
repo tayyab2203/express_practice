@@ -60,3 +60,104 @@ export const registerUser = async (data) => {
   // Backend se jo bhi response aaye — parsed JS object return karo
   return res.json();
 };
+
+
+// ─────────────────────────────────────────────────
+// DASHBOARD FETCH (role-based)
+// ─────────────────────────────────────────────────
+export const getDashboard = async (role) => {
+  const token = localStorage.getItem("token");
+
+  const endpoint = role === "admin"
+    ? `${BASE_URL}/admin/dashboard`
+    : `${BASE_URL}/employee/dashboard`;
+
+  const res = await fetch(endpoint, {
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${token}`,  // JWT token bhejo
+      "Content-Type": "application/json",
+    },
+  });
+
+  return res.json();
+};
+
+// Create role (admin)
+export const createRole = async (roleData) => {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(`${BASE_URL}/admin/roles`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(roleData),
+  });
+
+  return res.json();
+};
+
+// Create document (admin) — accepts { title, fileUrl, assignedUserId }
+export const createDocument = async (doc) => {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(`${BASE_URL}/admin/documents`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(doc),
+  });
+
+  return res.json();
+};
+
+// Get documents assigned to logged-in employee
+export const getAssignedDocuments = async () => {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(`${BASE_URL}/employee/documents`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  return res.json();
+};
+
+// Admin: list users
+export const getUsers = async () => {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(`${BASE_URL}/admin/users`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  return res.json();
+};
+
+// Admin: upload file to backend storage
+export const uploadFile = async (file) => {
+  const token = localStorage.getItem("token");
+  const formData = new FormData();
+  formData.append("file", file, file.name);
+
+  const res = await fetch(`${BASE_URL}/admin/upload`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  });
+
+  return res.json();
+};
